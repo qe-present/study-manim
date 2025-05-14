@@ -23,8 +23,6 @@ wheels/
 share/python-wheels/
 *.egg-info/
 .idea/
-requirements-dev.lock
-requirements.lock
 .installed.cfg
 
 *.egg
