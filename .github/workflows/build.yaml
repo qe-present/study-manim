@@ -45,7 +45,9 @@ jobs:
 
       - name: Install the latest version of rye
         uses: eifinger/setup-rye@v4
-
+        with:
+          enable-cache: true
+          cache-prefix: 'optional-prefix'
 
       - name: 安装manim
         run: |
@@ -54,7 +56,7 @@ jobs:
       - name: 运行manim
         run: |
           cd ${{ steps.find_folder.outputs.folder }}
-          ./build.cmd
+          rye run manim -pql main.py Main
       - name: 上传
         uses: actions/upload-artifact@v4
         with:
