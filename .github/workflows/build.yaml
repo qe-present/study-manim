@@ -64,11 +64,7 @@ jobs:
       - name: 运行manim
         run: |
           cd ${{ steps.find_folder.outputs.folder }}
-          if [ -f "build.cmd" ]; then
-            ./build.cmd
-          else
-            python -m manim main.py Main -pqh
-          fi
+          ./build.cmd
       - name: 上传
         uses: actions/upload-artifact@v4
         with:
