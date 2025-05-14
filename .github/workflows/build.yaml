@@ -11,26 +11,58 @@ jobs:
         id: check_message
         shell: bash
         run: |
-          if [[ "${{ github.event.head_commit.message }}" =~ ^[0-9]{2}$ ]]; then
+          COMMIT_MSG="${{ github.event.head_commit.message }}"
+          if [[ "$COMMIT_MSG" =~ ^[0-9]{2}$ ]]; then
+            echo "提交消息匹配数字模式：$COMMIT_MSG"
+            echo "number=$COMMIT_MSG" >> $GITHUB_OUTPUT
             echo "match=true" >> $GITHUB_OUTPUT
           else
+            echo "提交消息不匹配数字模式：$COMMIT_MSG"
             echo "match=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: 判断打包条件
-        if: steps.check_message.outputs.match == 'true'
-        run: |
-          echo "检查版本号通过，开始打包..."
-
       - name: 读取仓库
+        if: steps.check_message.outputs.match == 'true'
         uses: actions/checkout@v4
 
+      - name: 查找对应文件夹
+        if: steps.check_message.outputs.match == 'true'
+        id: find_folder
+        shell: bash
+        run: |
+          NUMBER="${{ steps.check_message.outputs.number }}"
+          echo "查找文件夹：$NUMBER-*"
+          FOLDER=$(find . -maxdepth 1 -type d -name "$NUMBER-*" | head -n 1)
+          if [ -n "$FOLDER" ]; then
+            echo "找到匹配文件夹：$FOLDER"
+            FOLDER_NAME=$(basename "$FOLDER")
+            echo "folder=$FOLDER_NAME" >> $GITHUB_OUTPUT
+            echo "found=true" >> $GITHUB_OUTPUT
+          else
+            echo "未找到匹配文件夹"
+            echo "found=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: 设置 Python 版本
+        if: steps.find_folder.outputs.found == 'true'
         uses: actions/setup-python@v4
         with:
           python-version: '3.13'
+
       - name: 安装manim
         run: |
           pip install manim
-      
+
+      - name: 运行manim
+        run: |
+          cd ${{ steps.find_folder.outputs.folder }}
+          if [ -f "build.cmd" ]; then
+            ./build.cmd
+          else
+            python -m manim main.py Main -pqh
+          fi
+      - name: 上传
+        uses: actions/upload-artifact@v4
+        with:
+          name: manim-output
+          path: ${{ steps.find_folder.outputs.folder }}/media/videos/**/*.mp4
