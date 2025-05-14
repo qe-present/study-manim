@@ -21,8 +21,11 @@ jobs:
         if: steps.check_message.outputs.match == 'true'
         run: |
           echo "检查版本号通过，开始打包..."
+
       - name: 读取仓库
-        run: action/checkout@4
+        uses: action/checkout@4
+
+
       - name: 设置 Python 版本
         uses: actions/setup-python@v4
         with:
