@@ -43,23 +43,13 @@ jobs:
             echo "found=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: 设置 Python 版本
-        if: steps.find_folder.outputs.found == 'true'
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.13'
+      - name: Install the latest version of rye
+        uses: eifinger/setup-rye@v4
 
-      - name: 缓存 manim 依赖
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-manim-${{ hashFiles('**/pyproject.toml') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-manim-
 
       - name: 安装manim
         run: |
-          pip install manim
+          rye sync
 
       - name: 运行manim
         run: |
