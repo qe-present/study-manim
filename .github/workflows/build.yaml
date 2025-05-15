@@ -47,7 +47,6 @@ jobs:
         uses: eifinger/setup-rye@v4
         with:
           enable-cache: true
-          cache-prefix: 'optional-prefix'
 
       - name: 安装manim
         run: |

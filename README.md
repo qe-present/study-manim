@@ -3,6 +3,6 @@
 学习 Manim 
 # 创建项目
 ```shell
-manim init project 04-shift --default
+manim init project 08-different-animate --default
 
 ```
