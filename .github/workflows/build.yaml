@@ -18,19 +18,14 @@ jobs:
             echo "match=true" >> $GITHUB_OUTPUT
           else
             echo "提交消息不匹配数字模式：$COMMIT_MSG"
-            
+            echo "match=false" >> $GITHUB_OUTPUT
           fi
-      - name：是否继续
-      - if: steps.check_message.outputs.match == 'false'
-        run: |
-          ${{failure()}}
-
       - name: 读取仓库
         if: steps.check_message.outputs.match == 'true'
         uses: actions/checkout@v4
 
       - name: 查找对应文件夹
-        if: steps.check_message.outputs.match == 'true'
+        if: ${{ cancelled()}}
         id: find_folder
         shell: bash
         run: |
